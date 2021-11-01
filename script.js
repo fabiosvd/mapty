@@ -75,6 +75,9 @@ class App {
     // Get user's position
     this._getPosition();
 
+    // Get data from local storage
+    this._getLocalStorage();
+
     // Attach event handlers
     form.addEventListener('click', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
@@ -105,6 +108,10 @@ class App {
     }).addTo(this.#map);
     // Handling clicks on map
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(work => {
+      this._renderWorkoutMarker(work);
+    });
   }
 
   _showForm(mapE) {
@@ -165,7 +172,7 @@ class App {
     this.#workouts.push(workout);
 
     // Render workout on map as marker
-    this.renderWorkoutMarker(workout);
+    this._renderWorkoutMarker(workout);
 
     // Render workout on list
     this._renderWorkout(workout);
@@ -175,9 +182,11 @@ class App {
       inputCadence.value =
       inputElevation.value =
         '';
+    // Set local storage to all workouts
+    this._setLocalStorage();
   }
 
-  renderWorkoutMarker(workout) {
+  _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
